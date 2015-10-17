@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+
+
+     	<node name="particle_filter" pkg="particle_filter" type="particle_filter_node" launch-prefix="xterm -e gdb -args" required="true" output="screen"/>
+
+
+</launch>
