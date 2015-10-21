@@ -149,7 +149,7 @@ void Particle_filter_gmm::init_visualise(ros::NodeHandle& node,const std::string
                 new opti_rviz::Vis_gmm(node,topic_name + "_gmm")
              );
 
-    vis_gmm->initialise("world",gmm.gmm.Weights(),gmm.gmm.Means(),gmm.gmm.Covariances());
+    vis_gmm->initialise("world_frame",gmm.gmm.Weights(),gmm.gmm.Means(),gmm.gmm.Covariances());
 }
 
 void Particle_filter_gmm::visualise(){

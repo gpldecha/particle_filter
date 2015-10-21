@@ -94,7 +94,7 @@ void Particle_filter::init_visualise(ros::NodeHandle& node,const std::string& to
                 new opti_rviz::Vis_point_cloud(node,topic_name)
              );
 
-    vis_pf->initialise("/world",particles);
+    vis_pf->initialise("world_frame",particles);
     vis_pf->set_display_type(opti_rviz::Vis_point_cloud::ONLY_HIGH_WEIGHTS);
 }
 
