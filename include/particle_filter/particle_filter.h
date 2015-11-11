@@ -16,9 +16,11 @@ class Particle_filter{
 public:
 
     Particle_filter(const pf::likelihood_model& likelihood_function,
+                    const pf::Measurement_h& measurement_h,
                     const pf::motion_model& motion_function,
                     std::size_t number_particles,
-                    std::size_t dimension);
+                    std::size_t x_dimension,
+                    std::size_t y_dimension);
 
     void reinitialise(const arma::mat& points);
 
@@ -57,6 +59,7 @@ public:
     arma::colvec                 weights;
     arma::colvec                 weights_tmp;
     arma::colvec                 L;
+    arma::mat                    hY;
     double                       max_w;
     double                       sum_ww;
     double                       sample_variance;
@@ -65,9 +68,11 @@ public:
 protected:
 
     const pf::likelihood_model& likelihood_function;
+    const pf::Measurement_h&    measurement_h;
     const pf::motion_model&     motion_function;
     std::size_t                 number_particles;
     double                      sum_w;
+    double                       Y_dim;
     arma::mat33                 Rot;
 
     std::shared_ptr<pf::Reguliser>  reguliser;
@@ -90,9 +95,11 @@ class Particle_filter_sir : public Particle_filter {
 public:
 
     Particle_filter_sir(const pf::likelihood_model& likelihood_function,
+                        const pf::Measurement_h& measurement_h,
                         const pf::motion_model& motion_function,
                         std::size_t number_particles,
-                        std::size_t dimension,
+                        std::size_t x_dimension,
+                        std::size_t y_dimension,
                         pf::Sampling& sampling);
 
     virtual void update(const arma::colvec &u, const arma::colvec &Y);

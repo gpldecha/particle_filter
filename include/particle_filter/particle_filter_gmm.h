@@ -18,9 +18,11 @@ class Particle_filter_gmm : public Particle_filter{
 public:
 
     Particle_filter_gmm(const pf::likelihood_model& likelihood_function,
+                        const pf::Measurement_h& measurement_h,
                         const pf::motion_model& motion_function,
                         const std::size_t number_particles,
-                        const std::size_t dimension,
+                        const std::size_t x_dimension,
+                        const std::size_t y_dimension,
                         const mean_shift::MeanShift_Parameters& mean_shift_parameters,
                         const std::size_t num_intial_points_meanshift);
 

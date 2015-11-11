@@ -4,11 +4,12 @@
 namespace pf {
 
 Static_grid_filter::Static_grid_filter(const pf::likelihood_model& likelihood_function,
+                                       const Measurement_h &measurement_h,
                    const pf::motion_model& motion_function,
                          std::size_t number_particles,
-                         std::size_t dimension
-                        )
-    :Particle_filter(likelihood_function,motion_function,number_particles,dimension)
+                         std::size_t x_dimension
+                        , std::size_t y_dimension)
+    :Particle_filter(likelihood_function,measurement_h,motion_function,number_particles,x_dimension,y_dimension)
 {
     bFirst = true;
 }
@@ -24,7 +25,7 @@ void Static_grid_filter::motion_update(const arma::colvec &u){
 }
 
 void Static_grid_filter::measurement_update(const arma::colvec& Y){
-    likelihood_function(L,Y,particles,Rot);
+  //  likelihood_function(L,Y,particles,Rot);
     weights = L;// + 2*std::numeric_limits<double>::min();
     normalise();
     /*weights = weights % weights_tmp;
@@ -68,18 +69,41 @@ void Static_grid_filter::visualise(){
 void Static_grid_filter::create_cube(arma::mat& points,float l, float w, float h, float bin_w,
                                          const arma::colvec3 position, const arma::vec3& rpy){
 
+    std::cout<< "-1" << std::endl;
 
     std::size_t num_l = l/bin_w;
     std::size_t num_w = w/bin_w;
     std::size_t num_h = h/bin_w;
+
+    if(num_h == 0){
+        num_h = 1;
+    }
+    if(num_w == 0){
+        num_w = 1;
+    }
+    if(num_l == 0){
+        num_l = 1;
+    }
+
     tf::Matrix3x3 R;
     tf::Vector3 p;
+    std::cout<< "-2" << std::endl;
+    std::cout<< "num_l: " << num_l << std::endl;
+    std::cout<< "num_w: " << num_w << std::endl;
+    std::cout<< "nu_h:  " << num_h << std::endl;
 
-    R.setRPY(rpy(0),rpy(1),rpy(2));
+    //R.setRPY(rpy(0),rpy(1),rpy(2));
+    R.setIdentity();
 
     tf::Vector3 t(-l/2.0 + position(0),-w/2.0 + position(1),-h/2.0 + position(2));
+    std::cout<< "-3" << std::endl;
 
+    std::cout<< "before resize" << std::endl;
+    std::cout<< "total num points: " << num_l * num_w * num_h << std::endl;
     points.resize(num_l * num_w * num_h,3);
+
+    std::cout<< "after resize" << std::endl;
+
     std::size_t index = 0;
     float step = bin_w/2;
 

@@ -28,7 +28,7 @@ int main(int argc, char** argv)
 
     mean_shift::MeanShift_Parameters mean_shift_parameters;
 
-    std::unique_ptr<pf::Particle_filter_gmm> particle_filter = std::unique_ptr<pf::Particle_filter_gmm>
+  /*  std::unique_ptr<pf::Particle_filter_gmm> particle_filter = std::unique_ptr<pf::Particle_filter_gmm>
             (
                     new pf::Particle_filter_gmm(likelihood_f,motion_f,100,3,mean_shift_parameters,20)
             );
@@ -46,7 +46,7 @@ int main(int argc, char** argv)
     std::cout<< "   motion update" << std::endl;
     particle_filter->motion_update(u);
     std::cout<< "   measurement update" << std::endl;
-    particle_filter->measurement_update(Y);
+    particle_filter->measurement_update(Y);*/
 
 
     return 0;

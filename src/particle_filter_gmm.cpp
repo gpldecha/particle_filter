@@ -3,18 +3,20 @@
 namespace pf{
 
 Particle_filter_gmm::Particle_filter_gmm(const likelihood_model&    likelihood_function,
+                                         const Measurement_h&       measurement_h,
                                          const motion_model&        motion_function,
                                          const size_t               number_particles,
-                                         const size_t               dimension,
+                                         const size_t               x_dimension,
+                                         const size_t               y_dimension,
                                          const mean_shift::MeanShift_Parameters &mean_shift_parameters,
                                          const std::size_t num_intial_points_meanshift):
-    Particle_filter(likelihood_function,motion_function,number_particles,dimension),
+    Particle_filter(likelihood_function,measurement_h,motion_function,number_particles,x_dimension,y_dimension),
     mean_shift_parameters(mean_shift_parameters),
     num_intial_points_meanshift(num_intial_points_meanshift)
 {
 
     bFirst = true;
-    centroids.resize(num_intial_points_meanshift,dimension);
+    centroids.resize(num_intial_points_meanshift,x_dimension);
 
 
 }
@@ -55,7 +57,7 @@ void Particle_filter_gmm::motion_update(const arma::colvec &u){
 
 void Particle_filter_gmm::measurement_update(const arma::colvec &Y){
     /// Update the weights
-    likelihood_function(L,Y,particles,Rot);
+    //likelihood_function(L,Y,particles,Rot);
 
 
    /* std::cout<<std::endl;

@@ -70,7 +70,6 @@ set(INC_FILES ${INCLUDE_DIR}/particle_filter/particle_filter.h
 set(SRC_FILES ${SRC_DIR}/particle_filter.cpp
               ${SRC_DIR}/particle_filter_gmm.cpp
               ${SRC_DIR}/sampling.cpp
-              ${SRC_DIR}/pf_visualisation.cpp
               ${SRC_DIR}/static_grid_filter.cpp
               ${SRC_DIR}/reguliser.cpp
 )

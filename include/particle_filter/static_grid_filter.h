@@ -11,9 +11,11 @@ class Static_grid_filter : public pf::Particle_filter {
 public:
 
     Static_grid_filter(const pf::likelihood_model& likelihood_function,
+                       const pf::Measurement_h& measurement_h,
                        const pf::motion_model& motion_function,
                              std::size_t number_particles,
-                             std::size_t dimension
+                             std::size_t x_dimension,
+                             std::size_t y_dimension
                             );
 
     virtual void update(const arma::colvec& u, const arma::colvec& Y);
