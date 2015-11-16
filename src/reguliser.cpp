@@ -76,7 +76,7 @@ bool Reguliser::update(const arma::colvec& Y, arma::mat &particles, arma::colvec
             std::cout<< "height: " << height << std::endl;
 
 
-            Uniform uniform(origin,orient,length,width,height);
+            stats::Uniform uniform(origin,orient,length,width,height);
             std::cout<< "here" << std::endl;
             for(std::size_t i = 0; i < particles.n_rows;i++){
                 particles.row(i) = uniform.sample().st();

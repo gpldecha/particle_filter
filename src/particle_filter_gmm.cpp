@@ -50,7 +50,7 @@ void Particle_filter_gmm::motion_update(const arma::colvec &u){
     motion_function(particles,u);
 
     for(std::size_t k = 0; k < gmm.K;k++){
-       gmm.setMu(gmm.getMu(k) + u,k);
+       //gmm.setMu(gmm.getMu(k) + u,k);
     }
 
 }
@@ -151,7 +151,7 @@ void Particle_filter_gmm::init_visualise(ros::NodeHandle& node,const std::string
                 new opti_rviz::Vis_gmm(node,topic_name + "_gmm")
              );
 
-    vis_gmm->initialise("world_frame",gmm.gmm.Weights(),gmm.gmm.Means(),gmm.gmm.Covariances());
+    vis_gmm->initialise("world_frame",gmm.pi,gmm.Means,gmm.Covariances);
 }
 
 void Particle_filter_gmm::visualise(){
@@ -159,7 +159,7 @@ void Particle_filter_gmm::visualise(){
     /*if(gmm.gmm.Means().size() > 0){
         gmm.gmm.Means()[0].print("Mean[0]");
     }*/
-    vis_gmm->update(gmm.gmm.Weights(),gmm.gmm.Means(),gmm.gmm.Covariances());
+    vis_gmm->update(gmm.pi,gmm.Means,gmm.Covariances);
     vis_gmm->publish();
 }
 

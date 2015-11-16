@@ -45,12 +45,12 @@ private:
 
 public:
 
-    GMM                                         gmm;
+    stats::GMM                                  gmm;
 
 private:
 
     std::unique_ptr<mean_shift::MeanShift>      mean_shift_ptr;
-    Clustering                                  clustering;
+    stats::Clustering                           clustering;
     Initialise                                  initialise;
     mean_shift::MeanShift_Parameters            mean_shift_parameters;
     std::size_t                                 num_intial_points_meanshift;

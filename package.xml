@@ -52,6 +52,11 @@
   <build_depend>        message_generation   </build_depend>
   <run_depend>          message_generation  </run_depend>
 
+  <build_depend>        statistics_ml   </build_depend>
+  <run_depend>          statistics_ml  </run_depend>
+
+
+
 
 
 

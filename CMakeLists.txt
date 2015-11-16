@@ -8,6 +8,7 @@ project(particle_filter)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   optitrack_rviz
+  statistics_ml
   std_msgs
   message_generation
 )
@@ -45,8 +46,6 @@ catkin_package(
   DEPENDS system_lib
 )
 
-set(INCLUDE_STATISTICS /home/guillaume/CppWorkSpace/Statistics/include)
-set(LIB_STATISTICS /home/guillaume/CppWorkSpace/Statistics/lib/libstatistics.so)
 
 ###########
 ## Build ##
@@ -80,9 +79,7 @@ add_library(particle_filter
   ${SRC_FILES} ${INC_FILES}
 )
 
-target_link_libraries(particle_filter
-   ${catkin_LIBRARIES} ${LIB_STATISTICS} armadillo mlpack
-)
+target_link_libraries(particle_filter ${catkin_LIBRARIES} armadillo mlpack )
 
 ## Declare a cpp executable
 add_executable(particle_filter_node
