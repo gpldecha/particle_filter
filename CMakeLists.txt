@@ -64,6 +64,8 @@ set(INC_FILES ${INCLUDE_DIR}/particle_filter/particle_filter.h
               ${INCLUDE_DIR}/particle_filter/particle_filter_definitions.h
               ${INCLUDE_DIR}/particle_filter/static_grid_filter.h
               ${INCLUDE_DIR}/particle_filter/reguliser.h
+              ${INCLUDE_DIR}/point_mass_filter/point_mass_filter.h
+
 )
 
 set(SRC_FILES ${SRC_DIR}/particle_filter.cpp
@@ -71,6 +73,7 @@ set(SRC_FILES ${SRC_DIR}/particle_filter.cpp
               ${SRC_DIR}/sampling.cpp
               ${SRC_DIR}/static_grid_filter.cpp
               ${SRC_DIR}/reguliser.cpp
+              ${SRC_DIR}/point_mass_filter/point_mass_filter.cpp
 )
 
 
