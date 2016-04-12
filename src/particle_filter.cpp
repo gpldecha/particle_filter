@@ -98,26 +98,9 @@ void Particle_filter::add_reguliser(std::shared_ptr<pf::Reguliser>& reguliser){
 }
 
 void Particle_filter::init_visualise(ros::NodeHandle& node,const std::string& topic_name){
-    vis_pf = std::unique_ptr<opti_rviz::Vis_point_cloud>
-             (
-                new opti_rviz::Vis_point_cloud(node,topic_name)
-             );
-
-    vis_pf->initialise("world_frame",particles);
+    vis_pf.reset(new opti_rviz::Vis_point_cloud(node,topic_name));
+    vis_pf->initialise("world",particles);
     vis_pf->set_display_type(opti_rviz::Vis_point_cloud::ONLY_HIGH_WEIGHTS);
-}
-
-void Particle_filter::visualise(){
-    compute_color(color_t);
-    vis_pf->update(particles,colors,weights,0.8 * max_w);
-    vis_pf->publish();
-}
-
-void  Particle_filter::set_visualisation_mode(opti_rviz::Vis_point_cloud::display_mode mode){
-    vis_pf->set_display_type(mode);
-}
-void Particle_filter::set_color_mode(pf::color_type color_t){
-    this->color_t = color_t;
 }
 
 void Particle_filter::compute_color(color_type c_type){
@@ -137,7 +120,13 @@ void Particle_filter::compute_color(color_type c_type){
             colors[i][2]    = ((float)rgb[2])/255;
         }
     }
+}
 
+
+void Particle_filter::visualise(){
+    compute_color(color_t);
+    vis_pf->update(particles,colors,weights,0.8 * max_w);
+    vis_pf->publish();
 }
 
 
@@ -165,9 +154,9 @@ Particle_filter_sir::Particle_filter_sir(const pf::likelihood_model& likelihood_
 
 
 
-void Particle_filter_sir::update(const arma::colvec &u, const arma::colvec &Y){
+void Particle_filter_sir::update(const arma::colvec &u, const arma::colvec &Y, double duration){
     // std::cout<< "pf motion" << std::endl;
-     motion_update(u);
+     motion_update(u,duration);
    //  std::cout<< "pf measurement" << std::endl;
      measurement_update(Y);
    //  std::cout<< "weights (" << weights.n_elem << " x 1 )" << std::endl;
@@ -188,7 +177,7 @@ void Particle_filter_sir::update(const arma::colvec &u, const arma::colvec &Y){
     }
 }
 
-void Particle_filter_sir::motion_update(const arma::colvec& u){
+void Particle_filter_sir::motion_update(const arma::colvec& u, double duration){
     motion_function(particles,u);
 }
 
@@ -202,7 +191,7 @@ void Particle_filter_sir::measurement_update(const arma::colvec& Y){
 
    // std::cout<< "before likelihood_function" << std::endl;
 
-    likelihood_function(L,Y,hY);
+    likelihood_function(L.memptr(),Y,hY);
 
   //  std::cout<< "after likelihood" << std::endl;
 

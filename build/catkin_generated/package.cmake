@@ -1,0 +1,7 @@
+set(_CATKIN_CURRENT_PACKAGE "particle_filter")
+set(particle_filter_MAINTAINER "guillaume <guillaume@todo.todo>")
+set(particle_filter_DEPRECATED "")
+set(particle_filter_VERSION "0.0.0")
+set(particle_filter_BUILD_DEPENDS "roscpp" "optitrack_rviz" "std_msgs" "message_generation" "statistics_ml")
+set(particle_filter_RUN_DEPENDS "roscpp" "optitrack_rviz" "std_msgs" "message_generation" "statistics_ml")
+set(particle_filter_BUILDTOOL_DEPENDS "catkin")

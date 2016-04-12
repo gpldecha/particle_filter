@@ -1,0 +1,8 @@
+prefix=/home/guillaume/roscode/catkin_ws/src/particle_filter/build/devel
+
+Name: particle_filter
+Description: Description of particle_filter
+Version: 0.0.0
+Cflags: -I/home/guillaume/roscode/catkin_ws/src/particle_filter/build/devel/include -I/home/guillaume/roscode/catkin_ws/src/particle_filter/include
+Libs: -L/home/guillaume/roscode/catkin_ws/src/particle_filter/build/devel/lib -lparticle_filter
+Requires: roscpp

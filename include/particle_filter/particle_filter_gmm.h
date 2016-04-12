@@ -26,9 +26,9 @@ public:
                         const mean_shift::MeanShift_Parameters& mean_shift_parameters,
                         const std::size_t num_intial_points_meanshift);
 
-    virtual void update(const arma::colvec &u, const arma::colvec &Y);
+    virtual void update(const arma::colvec &u, const arma::colvec &Y, double duration=0);
 
-    virtual void motion_update(const arma::colvec &u);
+    virtual void motion_update(const arma::colvec &u, double duration = 0);
 
     virtual void measurement_update(const arma::colvec& Y);
 

@@ -21,8 +21,8 @@ Particle_filter_gmm::Particle_filter_gmm(const likelihood_model&    likelihood_f
 
 }
 
-void Particle_filter_gmm::update(const arma::colvec &u, const arma::colvec &Y){
-    motion_update(u);
+void Particle_filter_gmm::update(const arma::colvec &u, const arma::colvec &Y, double duration){
+    motion_update(u,duration);
     measurement_update(Y);
 
    /* if(reguliser != NULL){
@@ -46,7 +46,7 @@ void Particle_filter_gmm::update(const arma::colvec &u, const arma::colvec &Y){
     }
 }
 
-void Particle_filter_gmm::motion_update(const arma::colvec &u){
+void Particle_filter_gmm::motion_update(const arma::colvec &u,double duration){
     motion_function(particles,u);
 
     for(std::size_t k = 0; k < gmm.K;k++){

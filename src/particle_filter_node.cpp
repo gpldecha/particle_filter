@@ -6,9 +6,9 @@
 
 
 
-void likeli(arma::colvec& L, const arma::colvec& Y,const arma::mat& X){
+void likeli(double* L, const arma::colvec& Y,const arma::mat& X){
     for(std::size_t i = 0; i < Y.n_elem;i++){
-        L(i) = 1;
+        L[i] = 1;
     }
 }
 

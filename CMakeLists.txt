@@ -57,7 +57,8 @@ set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 include_directories(${INCLUDE_DIR} ${catkin_INCLUDE_DIRS} ${INCLUDE_STATISTICS})
 
 
-set(INC_FILES ${INCLUDE_DIR}/particle_filter/particle_filter.h
+set(INC_FILES ${INCLUDE_DIR}/particle_filter/base_particle_filter.h
+              ${INCLUDE_DIR}/particle_filter/particle_filter.h
               ${INCLUDE_DIR}/particle_filter/particle_filter_gmm.h
               ${INCLUDE_DIR}/particle_filter/sampling.h
               ${INCLUDE_DIR}/particle_filter/pf_visualisation.h
@@ -68,7 +69,8 @@ set(INC_FILES ${INCLUDE_DIR}/particle_filter/particle_filter.h
 
 )
 
-set(SRC_FILES ${SRC_DIR}/particle_filter.cpp
+set(SRC_FILES ${SRC_DIR}/base_particle_filter.cpp
+              ${SRC_DIR}/particle_filter.cpp
               ${SRC_DIR}/particle_filter_gmm.cpp
               ${SRC_DIR}/sampling.cpp
               ${SRC_DIR}/static_grid_filter.cpp
