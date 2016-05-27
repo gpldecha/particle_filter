@@ -340,25 +340,6 @@ private:
 
     }
 
-    inline void resize_after_p(){
-
-        m_ = P.n_rows;
-        // number of grid points y-axis
-        n_ = P.n_cols;
-        // number of grid points z-axis
-        k_ = P.n_slices;
-
-        hY.resize(P.n_elem,3);
-        L.resize(P.n_rows,P.n_cols,P.n_slices);
-        L.ones();
-
-        points.reshape(P.n_elem,3);
-        colors.resize(P.n_elem);
-        vis_pf->initialise("world",points);
-
-        get_coordiantes();
-
-    }
 
     inline void size_max_P(double &dx, double &dy, double dz){
 
@@ -405,7 +386,7 @@ private:
     double         max_w;
     double         mean_w, sum_w;
     arma::mat33    Rot;
-    arma::mat      hY;
+  //  arma::mat      hY;
     std::size_t    Y_dim;
     std::size_t    m_,n_,k_;
     std::chrono::time_point<std::chrono::steady_clock>          start_time, start_time2;

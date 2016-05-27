@@ -67,7 +67,7 @@ void Point_mass_filter::reset(const arma::colvec3& center,delta& delta_,length& 
 
 
     colors.resize(P.n_elem);
-    hY.resize(P.n_elem,Y_dim);
+   // hY.resize(P.n_elem,Y_dim);
 
 
     points = arma::zeros<arma::mat>(P.n_elem,3);
@@ -89,7 +89,7 @@ void Point_mass_filter::reset(const arma::colvec3& center,delta& delta_,length& 
     eps_trunc  = 0.05;
 
     No = 500;
-    N1 = 2500;
+    N1 = 100000;
 
     get_bbox();
     bb_current_volume = bb_volume;
@@ -116,7 +116,7 @@ void Point_mass_filter::update(const arma::colvec &u, const arma::colvec &Y, dou
 
 void Point_mass_filter::update_debug(const arma::colvec &u, const arma::colvec &Y, double duration){
     now_time   = std::chrono::steady_clock::now();
-    arma::colvec3 Y_ = Y;
+    arma::colvec Y_ = Y;
     Y_(1) = 0;
     Y_(2) = 0;
 
@@ -175,7 +175,7 @@ void Point_mass_filter::update_debug(const arma::colvec &u, const arma::colvec &
         {
             std::cout<< "start TRANSFORM BBOX" << std::endl;
             transform_bbox();
-            hY.resize(P.n_elem,3);
+          //  hY.resize(P.n_elem,Y_dim);
             get_coordiantes();
             //get_num_non_zero();
             std::cout<< "end TRANSFORM BBOX" << std::endl;
@@ -205,16 +205,13 @@ void Point_mass_filter::update_debug(const arma::colvec &u, const arma::colvec &
 }
 
 void Point_mass_filter::update_lik_debug(const arma::colvec &u, const arma::colvec &Y, double duration){
-    arma::colvec3 Y_ = Y;
-    Y_(0) = 1;
-    Y_(1) = 1;
-    Y_(2) = 0;
+    arma::colvec Y_ = Y;
 
-    if(arma::sum(Y_) != 0){
+     if(Y_(0) != 0){
         bFirstSense=true;
     }
 
-    motion_update(u);
+    //motion_update(u);
 
     if(bYupdate){
         measurement_update(Y_);
@@ -224,9 +221,9 @@ void Point_mass_filter::update_lik_debug(const arma::colvec &u, const arma::colv
 void Point_mass_filter::update_real(const arma::colvec& u, const arma::colvec& Y, double duration){
     now_time   = std::chrono::steady_clock::now();
 
-    arma::colvec3 Y_ = Y;
+    arma::colvec Y_ = Y;
 
-    if(arma::sum(Y_) != 0){
+    if(Y_(0) != 0){
         bFirstSense=true;
     }
 
@@ -249,16 +246,16 @@ void Point_mass_filter::update_real(const arma::colvec& u, const arma::colvec& Y
         get_bbox();
 
        // ROS_INFO_STREAM_THROTTLE(throt_time,"    ");
-        ROS_INFO_STREAM_THROTTLE(throt_time,"Nt: " << total_num_points);
-        ROS_INFO_STREAM_THROTTLE(throt_time,"N:  " << num_non_zero_points);
+      //  ROS_INFO_STREAM_THROTTLE(throt_time,"Nt: " << total_num_points);
+      //  ROS_INFO_STREAM_THROTTLE(throt_time,"N:  " << num_non_zero_points);
      // ROS_INFO_STREAM_THROTTLE(throt_time,"bb_volume:  " << bb_volume);
-        ROS_INFO_STREAM_THROTTLE(throt_time,"%vol:  " << bb_volume/bb_current_volume);
+      //  ROS_INFO_STREAM_THROTTLE(throt_time,"%vol:  " << bb_volume/bb_current_volume);
 
-        if(bb_volume/bb_current_volume < 0.4)
+    /*    if(bb_volume/bb_current_volume < 0.4)
         {
             std::cout<< "start TRANSFORM BBOX" << std::endl;
             transform_bbox();
-            hY.resize(P.n_elem,3);
+            hY.resize(P.n_elem,Y_dim);
             get_coordiantes();
             std::cout<< "end TRANSFORM BBOX" << std::endl;
         }
@@ -268,16 +265,16 @@ void Point_mass_filter::update_real(const arma::colvec& u, const arma::colvec& Y
         {
           //  ROS_INFO_STREAM("increase_densit()");
             increase_density();
-            hY.resize(P.n_elem,3);
+            hY.resize(P.n_elem,Y_dim);
         }else
         {
             /// Check if need to decrease density of points
             if( (num_non_zero_points > N1)){
               //  ROS_INFO_STREAM("decrease_density()");
                 decrease_density();
-                hY.resize(P.n_elem,3);
+                hY.resize(P.n_elem,Y_dim);
             }
-        }
+        }*/
 
         start_time = std::chrono::steady_clock::now();
         bYupdate = true;
@@ -332,8 +329,10 @@ void Point_mass_filter::motion_update(const arma::colvec &u, double duration){
 
 void Point_mass_filter::measurement_update(const arma::colvec& Y){
 
+
+
     get_coordiantes();
-    measurement_h(hY,points,Rot); // bottelneck
+    //measurement_h(hY,points,Rot); // bottelneck
 
     if(L.n_elem != P.n_elem)
     {
@@ -342,7 +341,7 @@ void Point_mass_filter::measurement_update(const arma::colvec& Y){
         L.ones();
     }
 
-    likelihood_function(L.memptr(),Y,hY);
+    likelihood_function(L.memptr(),Y,points,Rot);
     P = L % P;
     normalise();
 
@@ -361,6 +360,7 @@ void Point_mass_filter::normalise(){
         P.ones();
         normalise();
     }
+    max_w = arma::max(arma::vectorise(P));
 }
 
 void Point_mass_filter::interpolate(){
@@ -439,7 +439,7 @@ void Point_mass_filter::increase_density(){
 
     P         = Ptmp;
     points.resize(P.n_elem,3);
-    hY.resize(P.n_elem,3);
+    //hY.resize(P.n_elem,Y_dim);
     m_       = P.n_rows;
     n_       = P.n_cols;
     k_       = P.n_slices;
@@ -576,7 +576,7 @@ void Point_mass_filter::increase_lenght(int dm, int dn, int dk){
 
 
     points.resize(P.n_elem,3);
-    hY.resize(P.n_elem,3);
+  //  hY.resize(P.n_elem,Y_dim);
 
     m_       = P.n_rows;
     n_       = P.n_cols;
@@ -812,6 +812,7 @@ double Point_mass_filter::mean_weight() const{
 
 void Point_mass_filter::init_visualise(ros::NodeHandle& node,const std::string& topic_name){
     vis_pf.reset(new opti_rviz::Vis_point_cloud(node,topic_name));
+  // vis_pf->set_channel(opti_rviz::Vis_point_cloud::CHANNEL_TYPE::Intensity);
     vis_pf->initialise("world",points);
     vis_pf->set_display_type(opti_rviz::Vis_point_cloud::ONLY_HIGH_WEIGHTS);
 }
@@ -819,8 +820,9 @@ void Point_mass_filter::init_visualise(ros::NodeHandle& node,const std::string& 
 void Point_mass_filter::compute_color(pf::color_type c_type){
     if(c_type == C_LIKE){
         //  std::cout<< "c_like" << std::endl;
+        double max_L = arma::max(arma::vectorise(L));
         for(std::size_t i = 0 ; i < L.n_elem;i++){
-            ColorMap::jetColorMap(rgb,L.at(i),0,1);
+            ColorMap::jetColorMap(rgb,L.at(i),0,max_L);
             colors[i][0]    = ((float)rgb[0])/255;
             colors[i][1]    = ((float)rgb[1])/255;
             colors[i][2]    = ((float)rgb[2])/255;

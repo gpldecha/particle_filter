@@ -107,7 +107,7 @@ void Particle_filter::compute_color(color_type c_type){
 
     if(c_type == C_LIKE){
         for(std::size_t i = 0 ; i < number_particles;i++){
-            ColorMap::jetColorMap(rgb,L(i),0,1);
+            ColorMap::jetColorMap(rgb,L(i),0,arma::max(L));
             colors[i][0]    = ((float)rgb[0])/255;
             colors[i][1]    = ((float)rgb[1])/255;
             colors[i][2]    = ((float)rgb[2])/255;
@@ -191,7 +191,7 @@ void Particle_filter_sir::measurement_update(const arma::colvec& Y){
 
    // std::cout<< "before likelihood_function" << std::endl;
 
-    likelihood_function(L.memptr(),Y,hY);
+    //likelihood_function(L.memptr(),Y,hY);
 
   //  std::cout<< "after likelihood" << std::endl;
 
