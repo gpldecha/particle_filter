@@ -66,8 +66,12 @@ void Point_mass_filter::reset(const arma::colvec3& center,delta& delta_,length& 
     gauss_kernel.print();
 
 
+    count_decrease = 0;
+    count_increase = 0;
+    count_tbox     = 0;
+
     colors.resize(P.n_elem);
-   // hY.resize(P.n_elem,Y_dim);
+    // hY.resize(P.n_elem,Y_dim);
 
 
     points = arma::zeros<arma::mat>(P.n_elem,3);
@@ -175,7 +179,7 @@ void Point_mass_filter::update_debug(const arma::colvec &u, const arma::colvec &
         {
             std::cout<< "start TRANSFORM BBOX" << std::endl;
             transform_bbox();
-          //  hY.resize(P.n_elem,Y_dim);
+            //  hY.resize(P.n_elem,Y_dim);
             get_coordiantes();
             //get_num_non_zero();
             std::cout<< "end TRANSFORM BBOX" << std::endl;
@@ -207,11 +211,11 @@ void Point_mass_filter::update_debug(const arma::colvec &u, const arma::colvec &
 void Point_mass_filter::update_lik_debug(const arma::colvec &u, const arma::colvec &Y, double duration){
     arma::colvec Y_ = Y;
 
-     if(Y_(0) != 0){
+    if(Y_(0) != 0){
         bFirstSense=true;
     }
 
-    //motion_update(u);
+    motion_update(u);
 
     if(bYupdate){
         measurement_update(Y_);
@@ -245,43 +249,55 @@ void Point_mass_filter::update_real(const arma::colvec& u, const arma::colvec& Y
         get_num_non_zero();
         get_bbox();
 
-       // ROS_INFO_STREAM_THROTTLE(throt_time,"    ");
-      //  ROS_INFO_STREAM_THROTTLE(throt_time,"Nt: " << total_num_points);
-      //  ROS_INFO_STREAM_THROTTLE(throt_time,"N:  " << num_non_zero_points);
-     // ROS_INFO_STREAM_THROTTLE(throt_time,"bb_volume:  " << bb_volume);
-      //  ROS_INFO_STREAM_THROTTLE(throt_time,"%vol:  " << bb_volume/bb_current_volume);
+        // ROS_INFO_STREAM_THROTTLE(throt_time,"    ");
+        //  ROS_INFO_STREAM_THROTTLE(throt_time,"Nt: " << total_num_points);
+        //  ROS_INFO_STREAM_THROTTLE(throt_time,"N:  " << num_non_zero_points);
+        // ROS_INFO_STREAM_THROTTLE(throt_time,"bb_volume:  " << bb_volume);
+        //  ROS_INFO_STREAM_THROTTLE(throt_time,"%vol:  " << bb_volume/bb_current_volume);
 
-    /*    if(bb_volume/bb_current_volume < 0.4)
+        if(bb_volume/bb_current_volume < 0.4)
         {
-            std::cout<< "start TRANSFORM BBOX" << std::endl;
-            transform_bbox();
-            hY.resize(P.n_elem,Y_dim);
-            get_coordiantes();
-            std::cout<< "end TRANSFORM BBOX" << std::endl;
+            if(count_tbox < 3){
+                std::cout<< "start TRANSFORM BBOX" << std::endl;
+                transform_bbox();
+                //  hY.resize(P.n_elem,Y_dim);
+                get_coordiantes();
+                count_tbox++;
+                std::cout<< "end TRANSFORM BBOX" << std::endl;
+            }
         }
 
         int num_if_increase = get_num_if_increase();
         if((num_if_increase < N1) && (num_non_zero_points < No))
         {
-          //  ROS_INFO_STREAM("increase_densit()");
-            increase_density();
-            hY.resize(P.n_elem,Y_dim);
+            if (count_increase < 2){
+                ROS_INFO_STREAM("increase_densit()");
+                increase_density();
+                count_increase++;
+            }
+
+            //   hY.resize(P.n_elem,Y_dim);
         }else
         {
             /// Check if need to decrease density of points
             if( (num_non_zero_points > N1)){
-              //  ROS_INFO_STREAM("decrease_density()");
-                decrease_density();
-                hY.resize(P.n_elem,Y_dim);
+                //
+
+                if(count_decrease < 2){
+                    ROS_INFO_STREAM("decrease_density()");
+                    decrease_density();
+                    count_decrease++;
+                }
+                //        hY.resize(P.n_elem,Y_dim);
             }
-        }*/
+        }
 
         start_time = std::chrono::steady_clock::now();
         bYupdate = true;
     }
 
-   // ROS_INFO_STREAM_THROTTLE(throt_time,"Nt: " << total_num_points);
-   // ROS_INFO_STREAM_THROTTLE(throt_time,"N : " << num_non_zero_points);
+    // ROS_INFO_STREAM_THROTTLE(throt_time,"Nt: " << total_num_points);
+    // ROS_INFO_STREAM_THROTTLE(throt_time,"N : " << num_non_zero_points);
 }
 
 void Point_mass_filter::motion_update(const arma::colvec &u, double duration){
@@ -297,10 +313,10 @@ void Point_mass_filter::motion_update(const arma::colvec &u, double duration){
         diff_time   = now_time-start_time2;
 
         velocity = distance_travelled / diff_time.count();
-        vel_conv_alpha = 0.001;
-        gauss_kernel.var_x = vel_conv_alpha * std::pow(velocity(0),2);
-        gauss_kernel.var_y = vel_conv_alpha * std::pow(velocity(1),2);
-        gauss_kernel.var_z = vel_conv_alpha * std::pow(velocity(2),2);
+        vel_conv_alpha = 0.01;
+        gauss_kernel.var_x = vel_conv_alpha;// * std::pow(velocity(0),2);
+        gauss_kernel.var_y = vel_conv_alpha;// * std::pow(velocity(1),2);
+        gauss_kernel.var_z = vel_conv_alpha;// * std::pow(velocity(2),2);
         gauss_kernel.reset(delta_);
         gauss_kernel.print();
         assert(gauss_kernel.kernel_x.n_elem >= 3);
@@ -313,6 +329,11 @@ void Point_mass_filter::motion_update(const arma::colvec &u, double duration){
         normalise();
         double max_r,max_c, max_k;
         get_boundary_values(max_r,max_c,max_k);
+
+        if(max_r > 0.1 || P.n_cols < 3){
+
+            increase_lenght(2,0,0);
+        }
         if(max_c > 0.1 || P.n_cols < 3){
 
             increase_lenght(0,2,0);
@@ -542,10 +563,10 @@ void Point_mass_filter::increase_lenght(int dm, int dn, int dk){
     Ptmp.zeros(m_ + dm,n_ + dn,k_ + dk);
 
     double delta_vol = delta_.k * delta_.m * delta_.n;
-   // ROS_INFO_STREAM_THROTTLE(throt_time,"max_w: " << max_w);
+    // ROS_INFO_STREAM_THROTTLE(throt_time,"max_w: " << max_w);
     double eps       = 0.01 * max_w;
-   // std::cout<< "eps: " << eps << std::endl;
-     Ptmp = Ptmp * eps;
+    // std::cout<< "eps: " << eps << std::endl;
+    Ptmp = Ptmp * eps;
 
 
     std::size_t i, j, k;
@@ -576,7 +597,7 @@ void Point_mass_filter::increase_lenght(int dm, int dn, int dk){
 
 
     points.resize(P.n_elem,3);
-  //  hY.resize(P.n_elem,Y_dim);
+    //  hY.resize(P.n_elem,Y_dim);
 
     m_       = P.n_rows;
     n_       = P.n_cols;
@@ -812,7 +833,7 @@ double Point_mass_filter::mean_weight() const{
 
 void Point_mass_filter::init_visualise(ros::NodeHandle& node,const std::string& topic_name){
     vis_pf.reset(new opti_rviz::Vis_point_cloud(node,topic_name));
-  // vis_pf->set_channel(opti_rviz::Vis_point_cloud::CHANNEL_TYPE::Intensity);
+    // vis_pf->set_channel(opti_rviz::Vis_point_cloud::CHANNEL_TYPE::Intensity);
     vis_pf->initialise("world",points);
     vis_pf->set_display_type(opti_rviz::Vis_point_cloud::ONLY_HIGH_WEIGHTS);
 }
@@ -841,7 +862,8 @@ void Point_mass_filter::visualise(){
     //  std::cout<< "compute_color" << std::endl;
     compute_color(color_t);
     // std::cout<< "update" << std::endl;
-    vis_pf->update(points,colors,P.memptr(),0.8 * max_w);
+    max_w = P.max();
+    vis_pf->update(points,colors,P.memptr(),0.1 * max_w);
     vis_pf->publish();
 
     static tf::TransformBroadcaster br;

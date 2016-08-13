@@ -413,6 +413,10 @@ private:
     bool bYupdate;
     std::size_t counts;
 
+    int count_decrease;
+    int count_increase;
+    int count_tbox;
+
 
 
 
